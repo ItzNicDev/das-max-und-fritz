@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<!-- saved from url=(0386)https://static.parastorage.com/services/editor-elements-library/dist/thunderbolt/media/googleMap.f3347ff6.html?defaultLocation=0&showZoom=true&showStreetView=true&showMapType=true&language=de&id=dataItem-ir1y0yxb&googleMapsScriptPath=%2Fservices%2Feditor-elements-library%2Fdist%2Fthunderbolt%2Fmedia%2Fgoogle-map.min.02d41b79.js&origin=https%3A%2F%2Fwww.dasmaxundfritz.de&hasFocus=true -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+      <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+      <style type="text/css">
+        * {
+          border: none;
+          margin: 0;
+          padding: 0;
+        }
+
+        html {
+          height: 100%;
+        }
+
+        body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+
+        #map_canvas {
+          height: 100%;
+          width: 100%;
+        }
+
+        .gm-style-iw p {
+          width: 101%;
+        }
+
+        #content {
+          overflow-x: hidden;
+        }
+
+        body:not(.no-focus) *:focus-visible {
+          outline: none;
+          box-shadow: inset 0 0 0 1px #ffffff, inset 0 0 0 3px #116dff;
+        }
+
+        .no-focus *:focus,
+        .no-focus *:focus-visible {
+          outline: none !important;
+          box-shadow: none;
+        }
+
+        /*
+         * FYI:
+         * Weird selector that hides google map custom focus indicator
+         * Writing such weird selector since this div doesn't have any id or class
+         */
+         .no-focus div[style*="pointer-events: none"] {
+          border: 0 !important;
+        }
+
+        @media (forced-colors: active) {
+          body:not(.no-focus) {
+            & button:not(:disabled):not([style*="background: none;"]),
+            & button:not(:disabled):has(img),
+            & button:not(:disabled):has([style*="mask-image"]) {
+              outline: 2px solid ButtonText;
+              outline-offset: -4px;
+            }
+
+            & button:not(:disabled):not([style*="background: none;"]):hover,
+            & button:not(:disabled):has(img):hover,
+            & button:not(:disabled):has([style*="mask-image"]):hover {
+              outline: 3px solid Highlight;
+              outline-offset: -4px;
+            }
+
+            & button:not(:disabled):not([style*="background: none;"]):focus-visible,
+            & button:not(:disabled):has(img):focus-visible,
+            & button:not(:disabled):has([style*="mask-image"]):focus-visible {
+              outline: 3px solid Highlight;
+              outline-offset: -5px;
+            }
+
+            & button:not(:disabled)[style*="background: none;"]:not(:has(img)):not(:has([style*="mask-image"])),
+            & button:not(:disabled)[style*="background: none;"]:not(:has(img)):not(:has([style*="mask-image"])) * {
+              color: LinkText !important;
+            }
+
+            & *:focus-visible {
+              outline: 3px solid Highlight;
+              outline-offset: -3px;
+            }
+
+            & div[style*="pointer-events: none"] {
+              border-width: 3px !important;
+              border-color: Highlight !important;
+            }
+          }
+        }
+      </style>
+      <script>
+        (function () {
+          var params = new URLSearchParams(window.location.search);
+          var decodedGoogleMapsScriptPath = decodeURIComponent(
+            params.get('googleMapsScriptPath'),
+          );
+          var googleMapsScriptPath;
+          try { // if it is an URL, get only path part
+            googleMapsScriptPath = new URL(decodedGoogleMapsScriptPath).pathname;
+          } catch (e) {
+            googleMapsScriptPath = decodedGoogleMapsScriptPath;
+          }
+          var scriptUrl = `${googleMapsScriptPath}?origin=${decodeURIComponent(params.get('origin'))}`;
+
+          var script = document.createElement('script');
+          script.src = scriptUrl;
+          document.head.appendChild(script);
+
+          document.addEventListener('DOMContentLoaded', function () {
+            if (params.get('hasFocus') === 'false') {
+              document.body.classList.add('no-focus');
+            }
+          });
+        })();
+      </script><script src="./google-map.min.02d41b79.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="./map.js"></script><script type="text/javascript" charset="UTF-8" src="./marker.js"></script><script type="text/javascript" charset="UTF-8" src="./infowindow.js"></script></head>
+  
+  <body>
+    <div id="map_canvas"><div style="height: 100%; width: 100%;"></div></div>
+    <!--
+      A11y: adds aria-expanded to the native Google Maps tilt button (.gm-tilt).
+      The tilt button toggles visibility of sibling rotate buttons but Google Maps
+      does not set aria-expanded, so screen readers cannot announce the state.
+      Uses MutationObserver because map controls render asynchronously.
+
+      Fragile: depends on Google Maps internal DOM (class "gm-tilt" and sibling
+      rotate buttons with display toggling). Fails silently if Google changes
+      the structure.
+    -->
+    <script>
+      (function () {
+        var mapContainer = document.getElementById('map_canvas');
+        if (!mapContainer) {
+          return;
+        }
+
+        var currentTiltButton = null;
+        var parentObserver = null;
+        var containerObserver = null;
+
+        function getRotateSiblings(tiltButton) {
+          var parent = tiltButton.parentElement;
+          if (!parent) {
+            return [];
+          }
+          var siblings = parent.querySelectorAll('button');
+          var result = [];
+          for (var i = 0; i < siblings.length; i++) {
+            if (siblings[i] !== tiltButton) {
+              result.push(siblings[i]);
+            }
+          }
+          return result;
+        }
+
+        function isExpanded(tiltButton) {
+          var siblings = getRotateSiblings(tiltButton);
+          for (var i = 0; i < siblings.length; i++) {
+            if (window.getComputedStyle(siblings[i]).display !== 'none') {
+              return true;
+            }
+          }
+          return false;
+        }
+
+        function updateAriaExpanded(tiltButton) {
+          tiltButton.setAttribute(
+            'aria-expanded',
+            String(isExpanded(tiltButton)),
+          );
+        }
+
+        function startContainerObserver() {
+          containerObserver = new MutationObserver(function () {
+            enhanceTiltButton();
+          });
+          containerObserver.observe(mapContainer, {
+            childList: true,
+            subtree: true,
+          });
+        }
+
+        function enhanceTiltButton() {
+          var tiltButton = mapContainer.querySelector('.gm-tilt');
+          if (!tiltButton || tiltButton === currentTiltButton) {
+            return;
+          }
+
+          if (parentObserver) {
+            parentObserver.disconnect();
+            parentObserver = null;
+          }
+
+          currentTiltButton = tiltButton;
+          updateAriaExpanded(tiltButton);
+
+          if (containerObserver) {
+            containerObserver.disconnect();
+            containerObserver = null;
+          }
+
+          var parent = tiltButton.parentElement;
+          if (parent) {
+            parentObserver = new MutationObserver(function () {
+              if (!currentTiltButton || !currentTiltButton.isConnected) {
+                if (parentObserver) {
+                  parentObserver.disconnect();
+                  parentObserver = null;
+                }
+                currentTiltButton = null;
+                startContainerObserver();
+                return;
+              }
+              updateAriaExpanded(currentTiltButton);
+            });
+            parentObserver.observe(parent, {
+              attributes: true,
+              attributeFilter: ['style'],
+              subtree: true,
+              childList: true,
+            });
+          }
+        }
+
+        startContainerObserver();
+      })();
+    </script>
+  
+
+<script type="text/javascript" src="./js"></script></body></html>

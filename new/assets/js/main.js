@@ -16,6 +16,43 @@
     window.addEventListener('scroll', updateHeader, { passive: true });
   }
 
+  /* ---------- Rotating hero headline ---------- */
+  var heroHeadline = document.getElementById('heroHeadline');
+  var heroHeadlines = [
+    'Ein ganzer Vierseithof — ganz für euch allein.',
+    'Raum für gemeinsame Zeit.',
+    'Privatsphäre statt Hotelbetrieb.',
+    'Historischer Charme. Neu interpretiert.',
+    'Bayerischer Wald — ganz privat.'
+  ];
+
+  if (heroHeadline && !reduceMotion && heroHeadlines.length > 1) {
+    var headlineIndex = 0;
+    setInterval(function () {
+      headlineIndex = (headlineIndex + 1) % heroHeadlines.length;
+      heroHeadline.classList.add('is-fading');
+      setTimeout(function () {
+        heroHeadline.textContent = heroHeadlines[headlineIndex];
+        heroHeadline.classList.remove('is-fading');
+      }, 400);
+    }, 4500);
+  }
+
+  /* ---------- WhatsApp (placeholder, not wired up yet) ---------- */
+  var whatsappBtn = document.getElementById('whatsappBtn');
+  var whatsappTooltip = document.getElementById('whatsappTooltip');
+
+  if (whatsappBtn && whatsappTooltip) {
+    whatsappBtn.addEventListener('click', function () {
+      // TODO: replace with wa.me link once a business number is set up
+      whatsappTooltip.classList.add('is-visible');
+      clearTimeout(whatsappBtn._tooltipTimer);
+      whatsappBtn._tooltipTimer = setTimeout(function () {
+        whatsappTooltip.classList.remove('is-visible');
+      }, 2200);
+    });
+  }
+
   /* ---------- Mobile nav ---------- */
   var navToggle = document.getElementById('navToggle');
   var navToggleIcon = document.getElementById('navToggleIcon');

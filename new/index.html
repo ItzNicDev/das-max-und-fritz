@@ -35,6 +35,10 @@
 
     <div class="header-actions">
       <a href="https://www.instagram.com/dasmaxundfritz_landgut/" class="icon-btn" aria-label="Instagram" target="_blank" rel="noopener"><i class="bi bi-instagram"></i></a>
+      <button type="button" class="icon-btn icon-btn--whatsapp" id="whatsappBtn" aria-label="WhatsApp (in Kürze verfügbar)">
+        <i class="bi bi-whatsapp"></i>
+        <span class="tooltip-bubble" id="whatsappTooltip">In Kürze verfügbar</span>
+      </button>
       <button class="icon-btn nav-toggle" id="navToggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="mainNav">
         <i class="bi bi-list" id="navToggleIcon"></i>
       </button>
@@ -52,7 +56,7 @@
     <div class="hero__scrim"></div>
     <div class="hero__content reveal">
       <p class="eyebrow">Bayerischer Wald · Erbaut 1841</p>
-      <h1>Ein historischer Vierseithof&nbsp;— ganz für euch allein.</h1>
+      <h1 id="heroHeadline">Ein ganzer Vierseithof&nbsp;— ganz für euch allein.</h1>
       <p class="hero__subtitle">Familien- und Freundeswochenenden für gemeinsame Zeit.</p>
     </div>
     <button class="scroll-cue" id="scrollCue" aria-label="Nach unten scrollen">

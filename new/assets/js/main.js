@@ -112,18 +112,23 @@
   var lightbox = document.getElementById('lightbox');
 
   if (lightbox) {
-    var gridImages = Array.prototype.slice.call(document.querySelectorAll('#masonryGrid img'));
     var lightboxImg = document.getElementById('lightboxImg');
     var lightboxClose = document.getElementById('lightboxClose');
     var lightboxPrev = document.getElementById('lightboxPrev');
     var lightboxNext = document.getElementById('lightboxNext');
+    var activeImages = [];
     var currentIndex = 0;
 
-    var openLightbox = function (index) {
-      currentIndex = index;
-      var img = gridImages[currentIndex];
+    var showCurrent = function () {
+      var img = activeImages[currentIndex];
       lightboxImg.src = img.src;
       lightboxImg.alt = img.alt;
+    };
+
+    var openLightbox = function (images, index) {
+      activeImages = images;
+      currentIndex = index;
+      showCurrent();
       lightbox.classList.add('is-open');
       lightbox.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
@@ -136,15 +141,19 @@
     };
 
     var showRelative = function (delta) {
-      currentIndex = (currentIndex + delta + gridImages.length) % gridImages.length;
-      var img = gridImages[currentIndex];
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt;
+      currentIndex = (currentIndex + delta + activeImages.length) % activeImages.length;
+      showCurrent();
     };
 
-    gridImages.forEach(function (img, index) {
-      img.addEventListener('click', function () { openLightbox(index); });
-    });
+    var registerGallery = function (selector) {
+      var images = Array.prototype.slice.call(document.querySelectorAll(selector));
+      images.forEach(function (img, index) {
+        img.addEventListener('click', function () { openLightbox(images, index); });
+      });
+    };
+
+    registerGallery('#masonryGrid img');
+    registerGallery('.rooms__gallery img');
 
     lightboxClose.addEventListener('click', closeLightbox);
     lightboxPrev.addEventListener('click', function () { showRelative(-1); });
